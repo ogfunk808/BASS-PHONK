@@ -1722,37 +1722,37 @@ export default function App() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between', 
-          padding: isMobile ? '0 16px' : '0 40px'
+          padding: isMobile ? '0 12px' : '0 40px'
         }}
       >
         
         {/* Left side: Track Details */}
         <div 
           onClick={() => setActivePage('now-playing')}
-          style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isMobile ? '60%' : '25%', minWidth: 0, cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', width: isMobile ? '35%' : '25%', minWidth: 0, cursor: 'pointer' }}
           title="Click to view likes & comments!"
         >
           {currentTrack ? (
             <>
-              <img src={currentTrack.cover} alt={currentTrack.title} style={{ width: '48px', height: '48px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)', flexShrink: 0 }} />
+              <img src={currentTrack.cover} alt={currentTrack.title} style={{ width: '42px', height: '42px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)', flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentTrack.title}</h4>
-                <p style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentTrack.artist}</p>
+                <h4 style={{ fontSize: '12px', fontWeight: 'bold', margin: '0 0 2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentTrack.title}</h4>
+                <p style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.5)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentTrack.artist}</p>
               </div>
             </>
           ) : (
-            <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.35)' }}>{t.noSongPlaying}</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.35)' }}>{t.noSongPlaying}</span>
           )}
         </div>
 
         {/* Center side: Player Playback Controls */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: isMobile ? '35%' : '45%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '16px' : '24px' }}>
-            <button style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', display: isMobile ? 'none' : 'block' }} onClick={handlePrev}>⏮</button>
-            <button style={{ background: '#FFFFFF', border: 'none', color: '#000000', width: '34px', height: '34px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer' }} onClick={handlePlayPause}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: isMobile ? '30%' : '45%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '24px' }}>
+            <button style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '15px', cursor: 'pointer', display: isMobile ? 'none' : 'block' }} onClick={handlePrev}>⏮</button>
+            <button style={{ background: '#FFFFFF', border: 'none', color: '#000000', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }} onClick={handlePlayPause}>
               {isPlaying ? '⏸' : '▶'}
             </button>
-            <button style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer' }} onClick={handleNext}>⏭</button>
+            <button style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '15px', cursor: 'pointer' }} onClick={handleNext}>⏭</button>
           </div>
           
           {/* Progress bar (Hidden on extremely small screens or made sleek) */}
@@ -1770,53 +1770,53 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right side: Volume Booster (Hidden or simplified on mobile) */}
-        {!isMobile && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '16px', width: '25%' }}>
-            
-            {/* 8D Status Indicator */}
-            {is8D && (
-              <span style={{ fontSize: '9px', background: 'rgba(0, 255, 255, 0.1)', color: '#00FFFF', padding: '3px 8px', borderRadius: '4px', border: '1px solid #00FFFF', fontWeight: 'bold', letterSpacing: '1px' }}>
-                {t.spatialActive}
-              </span>
-            )}
+        {/* Right side: Volume Booster (Always visible & responsive!) */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: isMobile ? '6px' : '16px', width: isMobile ? '35%' : '25%', minWidth: 0 }}>
+          
+          {/* 8D Status Indicator */}
+          {is8D && !isMobile && (
+            <span style={{ fontSize: '9px', background: 'rgba(0, 255, 255, 0.1)', color: '#00FFFF', padding: '3px 8px', borderRadius: '4px', border: '1px solid #00FFFF', fontWeight: 'bold', letterSpacing: '1px' }}>
+              {t.spatialActive}
+            </span>
+          )}
 
-            {/* Equalizer Quick Link */}
+          {/* Equalizer Quick Link */}
+          {!isMobile && (
             <button style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '15px' }} onClick={() => setActivePage('settings')} title={t.equalizer}>
               🎛️
             </button>
-            
-            {/* Volume slider supporting up to 1000% gain */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '13px', color: volume > 1.0 ? '#FF0040' : 'rgba(255, 255, 255, 0.5)' }}>🔊</span>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="10" 
-                  step="0.1"
-                  value={volume} 
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  style={{ 
-                    width: '80px', 
-                    height: '4px', 
-                    accentColor: volume > 1.0 ? '#FF0040' : '#00FFFF'
-                  }}
-                />
-                <span style={{ fontSize: '10px', fontWeight: 'bold', color: volume > 1.0 ? '#FF0040' : '#FFF', minWidth: '40px' }}>
-                  {Math.round(volume * 100)}%
-                </span>
-              </div>
-              
-              {volume > 1.0 && (
-                <span style={{ fontSize: '7px', color: '#FF0040', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-                  {t.volumeWarning}
-                </span>
-              )}
+          )}
+          
+          {/* Volume slider supporting up to 1000% gain */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : '8px' }}>
+              <span style={{ fontSize: isMobile ? '11px' : '13px', color: volume > 1.0 ? '#FF0040' : 'rgba(255, 255, 255, 0.5)' }}>🔊</span>
+              <input 
+                type="range" 
+                min="0" 
+                max="10" 
+                step="0.1"
+                value={volume} 
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                style={{ 
+                  width: isMobile ? '50px' : '80px', 
+                  height: '4px', 
+                  accentColor: volume > 1.0 ? '#FF0040' : '#00FFFF'
+                }}
+              />
+              <span style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: 'bold', color: volume > 1.0 ? '#FF0040' : '#FFF', minWidth: isMobile ? '28px' : '40px' }}>
+                {Math.round(volume * 100)}%
+              </span>
             </div>
-
+            
+            {volume > 1.0 && !isMobile && (
+              <span style={{ fontSize: '7px', color: '#FF0040', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+                {t.volumeWarning}
+              </span>
+            )}
           </div>
-        )}
+
+        </div>
 
       </footer>
 
