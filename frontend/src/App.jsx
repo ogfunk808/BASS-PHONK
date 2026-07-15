@@ -77,6 +77,7 @@ const TRANSLATIONS = {
     audioUrlLabel: 'Audio Stream URL',
     coverUrlLabel: 'Cover Art Image URL',
     publishBtn: 'PUBLISH TRACK ⚡',
+    youtube: 'YouTube Channel 📺',
   },
   pt: {
     home: 'Início',
@@ -139,6 +140,7 @@ const TRANSLATIONS = {
     audioUrlLabel: 'Link do Áudio',
     coverUrlLabel: 'Link da Capa do Álbum',
     publishBtn: 'PUBLICAR MÚSICA ⚡',
+    youtube: 'Canal do YouTube 📺',
   },
   ru: {
     home: 'Главная',
@@ -201,6 +203,7 @@ const TRANSLATIONS = {
     audioUrlLabel: 'Ссылка на аудиофайл',
     coverUrlLabel: 'Ссылка на обложку',
     publishBtn: 'ОПУБЛИКОВАТЬ ⚡',
+    youtube: 'YouTube Канал 📺',
   }
 };
 
@@ -366,6 +369,7 @@ export default function App() {
   };
 
   const handlePlayPause = () => {
+    handleInteraction();
     if (!currentTrack && queue.length > 0) {
       handlePlayTrack(queue[0], 0);
       return;
@@ -374,6 +378,7 @@ export default function App() {
   };
 
   const handlePlayTrack = (track, index) => {
+    handleInteraction();
     setCurrentIndex(index);
     setCurrentTrack(track);
     setIsPlaying(true);
@@ -611,6 +616,7 @@ export default function App() {
         onTimeUpdate={onTimeUpdate}
         onLoadedMetadata={onLoadedMetadata}
         onEnded={onTrackEnded}
+        crossOrigin="anonymous"
       />
 
       {/* 1. SIDEBAR (Collapsible drawer on mobile) */}
@@ -658,6 +664,9 @@ export default function App() {
           <button className={`neon-btn ${activePage === 'car-mode' ? 'active' : ''}`} onClick={() => { setActivePage('car-mode'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'car-mode' ? 'rgba(191, 0, 255, 0.12)' : 'transparent', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <span style={{ fontSize: '15px' }}>🏁</span> {t.speedometer}
           </button>
+          <a href="https://youtube.com/@ogfunk808?si=6pcmeey4q8zIfZ96" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'transparent', border: 'none', color: '#FF0000', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%', textDecoration: 'none', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '15px' }}>📺</span> {t.youtube || 'YouTube Channel'}
+          </a>
           <button className={`neon-btn ${activePage === 'wallpapers' ? 'active' : ''}`} onClick={() => { setActivePage('wallpapers'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'wallpapers' ? 'rgba(191, 0, 255, 0.12)' : 'transparent', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <span style={{ fontSize: '15px' }}>🖼️</span> {t.wallpapers}
           </button>
