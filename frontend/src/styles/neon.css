@@ -1,0 +1,278 @@
+/* ============================================
+   BASS PHONK - Neon Effect Styles
+   ============================================ */
+
+/* ── Neon Text ── */
+.neon-text-red {
+  color: var(--neon-red);
+  text-shadow: 0 0 7px rgba(var(--neon-red-rgb), 0.6),
+               0 0 20px rgba(var(--neon-red-rgb), 0.4),
+               0 0 42px rgba(var(--neon-red-rgb), 0.2);
+}
+
+.neon-text-purple {
+  color: var(--neon-purple);
+  text-shadow: 0 0 7px rgba(var(--neon-purple-rgb), 0.6),
+               0 0 20px rgba(var(--neon-purple-rgb), 0.4),
+               0 0 42px rgba(var(--neon-purple-rgb), 0.2);
+}
+
+.neon-text-cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 7px rgba(var(--neon-cyan-rgb), 0.6),
+               0 0 20px rgba(var(--neon-cyan-rgb), 0.4),
+               0 0 42px rgba(var(--neon-cyan-rgb), 0.2);
+}
+
+.neon-text-magenta {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 7px rgba(var(--neon-magenta-rgb), 0.6),
+               0 0 20px rgba(var(--neon-magenta-rgb), 0.4),
+               0 0 42px rgba(var(--neon-magenta-rgb), 0.2);
+}
+
+/* ── Neon Buttons ── */
+.neon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-display);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.neon-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.neon-btn:hover::before {
+  opacity: 1;
+}
+
+.neon-btn:active {
+  transform: scale(0.97);
+}
+
+/* Red Variant */
+.neon-btn-red {
+  background: rgba(var(--neon-red-rgb), 0.15);
+  border: 1px solid rgba(var(--neon-red-rgb), 0.4);
+  color: var(--neon-red);
+}
+
+.neon-btn-red::before {
+  background: rgba(var(--neon-red-rgb), 0.1);
+}
+
+.neon-btn-red:hover {
+  box-shadow: 0 0 15px rgba(var(--neon-red-rgb), 0.3),
+              0 0 40px rgba(var(--neon-red-rgb), 0.15),
+              inset 0 0 15px rgba(var(--neon-red-rgb), 0.1);
+  border-color: rgba(var(--neon-red-rgb), 0.7);
+}
+
+/* Purple Variant */
+.neon-btn-purple {
+  background: rgba(var(--neon-purple-rgb), 0.15);
+  border: 1px solid rgba(var(--neon-purple-rgb), 0.4);
+  color: var(--neon-purple);
+}
+
+.neon-btn-purple::before {
+  background: rgba(var(--neon-purple-rgb), 0.1);
+}
+
+.neon-btn-purple:hover {
+  box-shadow: 0 0 15px rgba(var(--neon-purple-rgb), 0.3),
+              0 0 40px rgba(var(--neon-purple-rgb), 0.15),
+              inset 0 0 15px rgba(var(--neon-purple-rgb), 0.1);
+  border-color: rgba(var(--neon-purple-rgb), 0.7);
+}
+
+/* Cyan Variant */
+.neon-btn-cyan {
+  background: rgba(var(--neon-cyan-rgb), 0.1);
+  border: 1px solid rgba(var(--neon-cyan-rgb), 0.3);
+  color: var(--neon-cyan);
+}
+
+.neon-btn-cyan::before {
+  background: rgba(var(--neon-cyan-rgb), 0.08);
+}
+
+.neon-btn-cyan:hover {
+  box-shadow: 0 0 15px rgba(var(--neon-cyan-rgb), 0.3),
+              0 0 40px rgba(var(--neon-cyan-rgb), 0.15),
+              inset 0 0 15px rgba(var(--neon-cyan-rgb), 0.08);
+  border-color: rgba(var(--neon-cyan-rgb), 0.6);
+}
+
+/* Solid / Filled Variants */
+.neon-btn-solid-red {
+  background: var(--gradient-fire);
+  border: none;
+  color: #fff;
+  font-weight: var(--font-bold);
+}
+
+.neon-btn-solid-red:hover {
+  box-shadow: var(--shadow-neon-red);
+  transform: translateY(-2px);
+}
+
+.neon-btn-solid-purple {
+  background: var(--gradient-primary);
+  border: none;
+  color: #fff;
+  font-weight: var(--font-bold);
+}
+
+.neon-btn-solid-purple:hover {
+  box-shadow: var(--shadow-neon-purple);
+  transform: translateY(-2px);
+}
+
+/* ── Neon Progress Bar ── */
+.neon-progress {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.neon-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  transition: width 100ms linear;
+  position: relative;
+}
+
+.neon-progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--neon-red);
+  transform: translate(50%, -50%) scale(0);
+  transition: transform var(--transition-fast);
+  box-shadow: 0 0 8px rgba(var(--neon-red-rgb), 0.6);
+}
+
+.neon-progress:hover .neon-progress-fill::after {
+  transform: translate(50%, -50%) scale(1);
+}
+
+.neon-progress:hover {
+  height: 6px;
+}
+
+/* ── Neon Borders ── */
+.neon-border-red {
+  border: 1px solid rgba(var(--neon-red-rgb), 0.3);
+  box-shadow: inset 0 0 15px rgba(var(--neon-red-rgb), 0.05);
+}
+
+.neon-border-purple {
+  border: 1px solid rgba(var(--neon-purple-rgb), 0.3);
+  box-shadow: inset 0 0 15px rgba(var(--neon-purple-rgb), 0.05);
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(var(--neon-cyan-rgb), 0.3);
+  box-shadow: inset 0 0 15px rgba(var(--neon-cyan-rgb), 0.05);
+}
+
+/* ── Neon Glow Dot ── */
+.neon-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+.neon-dot-red {
+  background: var(--neon-red);
+  box-shadow: 0 0 6px rgba(var(--neon-red-rgb), 0.8);
+}
+
+.neon-dot-green {
+  background: var(--neon-green);
+  box-shadow: 0 0 6px rgba(var(--neon-green-rgb), 0.8);
+}
+
+/* ── Neon Underline ── */
+.neon-underline {
+  position: relative;
+}
+
+.neon-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+  transition: width var(--transition-base);
+  box-shadow: 0 0 8px rgba(var(--neon-red-rgb), 0.4);
+}
+
+.neon-underline:hover::after,
+.neon-underline.active::after {
+  width: 100%;
+}
+
+/* ── Neon Icon Button ── */
+.neon-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.neon-icon-btn:hover {
+  background: rgba(var(--neon-purple-rgb), 0.1);
+  border-color: rgba(var(--neon-purple-rgb), 0.3);
+  color: var(--neon-purple);
+  box-shadow: 0 0 15px rgba(var(--neon-purple-rgb), 0.2);
+}
+
+.neon-icon-btn.active {
+  background: rgba(var(--neon-red-rgb), 0.15);
+  border-color: rgba(var(--neon-red-rgb), 0.4);
+  color: var(--neon-red);
+}
+
+@keyframes neonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

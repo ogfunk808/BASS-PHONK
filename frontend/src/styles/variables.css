@@ -1,0 +1,144 @@
+/* ============================================
+   BASS PHONK - Design Tokens & CSS Variables
+   ============================================ */
+
+:root {
+  /* ── Core Colors ── */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0A0A0A;
+  --color-bg-tertiary: #111111;
+  --color-bg-elevated: #1A1A1A;
+  --color-bg-card: #0D0D0D;
+
+  /* ── Neon Accents ── */
+  --neon-red: #FF0040;
+  --neon-purple: #BF00FF;
+  --neon-cyan: #00FFFF;
+  --neon-magenta: #FF00DE;
+  --neon-green: #00FF88;
+  --neon-orange: #FF6B00;
+  --neon-yellow: #FFD600;
+  --neon-blue: #0088FF;
+
+  /* ── Neon RGB values (for rgba usage) ── */
+  --neon-red-rgb: 255, 0, 64;
+  --neon-purple-rgb: 191, 0, 255;
+  --neon-cyan-rgb: 0, 255, 255;
+  --neon-magenta-rgb: 255, 0, 222;
+  --neon-green-rgb: 0, 255, 136;
+
+  /* ── Gradients ── */
+  --gradient-primary: linear-gradient(135deg, var(--neon-red), var(--neon-purple));
+  --gradient-secondary: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+  --gradient-accent: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  --gradient-fire: linear-gradient(135deg, var(--neon-red), var(--neon-orange));
+  --gradient-cosmic: linear-gradient(135deg, var(--neon-purple), var(--neon-blue), var(--neon-cyan));
+  --gradient-dark: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.95) 100%);
+
+  /* ── Text Colors ── */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #666666;
+  --text-muted: #444444;
+
+  /* ── Typography ── */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+  --tracking-widest: 0.2em;
+
+  /* ── Spacing ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Border Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.9);
+
+  --shadow-neon-red: 0 0 20px rgba(var(--neon-red-rgb), 0.4), 0 0 60px rgba(var(--neon-red-rgb), 0.15);
+  --shadow-neon-purple: 0 0 20px rgba(var(--neon-purple-rgb), 0.4), 0 0 60px rgba(var(--neon-purple-rgb), 0.15);
+  --shadow-neon-cyan: 0 0 20px rgba(var(--neon-cyan-rgb), 0.4), 0 0 60px rgba(var(--neon-cyan-rgb), 0.15);
+  --shadow-neon-magenta: 0 0 20px rgba(var(--neon-magenta-rgb), 0.4), 0 0 60px rgba(var(--neon-magenta-rgb), 0.15);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Glass ── */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.15);
+  --glass-blur: 20px;
+  --glass-blur-heavy: 40px;
+
+  /* ── Layout ── */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 72px;
+  --navbar-height: 64px;
+  --mini-player-height: 80px;
+  --content-max-width: 1400px;
+
+  /* ── Z-Index Scale ── */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sidebar: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-toast: 600;
+  --z-tooltip: 700;
+  --z-player: 800;
+  --z-fullplayer: 900;
+  --z-splash: 9999;
+}

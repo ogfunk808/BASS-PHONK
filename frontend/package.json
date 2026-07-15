@@ -1,0 +1,28 @@
+{
+  "name": "bass-phonk",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "BASS PHONK - Premium Phonk Music Streaming App",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.1",
+    "zustand": "^5.0.3",
+    "@supabase/supabase-js": "^2.47.12",
+    "react-icons": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7",
+    "eslint": "^9.17.0"
+  }
+}
