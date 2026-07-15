@@ -287,12 +287,12 @@ export default function App() {
     const fetchYoutubeVideos = async () => {
       const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
       if (!apiKey) {
-        // Fallback to static list of Phonk videos
+        // Fallback to static list of Phonk videos (100% public, embed-safe)
         setYoutubeVideos([
-          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
-          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
-          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
-          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
         ]);
         return;
       }
@@ -337,10 +337,10 @@ export default function App() {
       } catch (err) {
         console.warn('YouTube Live API failed, using fallback list:', err);
         setYoutubeVideos([
-          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
-          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
-          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
-          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
         ]);
       } finally {
         setLoadingYoutube(false);
