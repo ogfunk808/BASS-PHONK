@@ -7,11 +7,11 @@ import { GENRES, DEMO_TRACKS, EQ_PRESETS } from './utils/constants';
 
 // Simple mock/demo audio sources for phonk tracks so they play immediately!
 const DEMO_AUDIO_URLS = [
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
+  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3',
+  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3',
+  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3',
+  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3',
+  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Close_Eyes.mp3'
 ];
 
 // Multi-language translation database
