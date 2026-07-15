@@ -278,6 +278,78 @@ export default function App() {
   });
   const [userLikedTracks, setUserLikedTracks] = useState(new Set());
   const [newCommentText, setNewCommentText] = useState('');
+
+  // YouTube Data API v3 Live Integration
+  const [youtubeVideos, setYoutubeVideos] = useState([]);
+  const [loadingYoutube, setLoadingYoutube] = useState(false);
+
+  useEffect(() => {
+    const fetchYoutubeVideos = async () => {
+      const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+      if (!apiKey) {
+        // Fallback to static list of Phonk videos
+        setYoutubeVideos([
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+        ]);
+        return;
+      }
+
+      setLoadingYoutube(true);
+      try {
+        const channelRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=@ogfunk808&key=${apiKey}`
+        );
+        const channelData = await channelRes.json();
+        
+        if (channelData.items && channelData.items.length > 0) {
+          const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+          
+          const videosRes = await fetch(
+            `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId=${uploadsPlaylistId}&key=${apiKey}`
+          );
+          const videosData = await videosRes.json();
+          
+          if (videosData.items) {
+            const demoAudios = [
+              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3',
+              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3',
+              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3',
+              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3'
+            ];
+            
+            const mapped = videosData.items.map((item, idx) => {
+              const snippet = item.snippet;
+              return {
+                title: snippet.title,
+                embedId: snippet.resourceId.videoId,
+                duration: 'Live Beat',
+                audioUrl: demoAudios[idx % demoAudios.length]
+              };
+            });
+            setYoutubeVideos(mapped);
+          }
+        } else {
+          throw new Error("No channel found for handle @ogfunk808");
+        }
+      } catch (err) {
+        console.warn('YouTube Live API failed, using fallback list:', err);
+        setYoutubeVideos([
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+        ]);
+      } finally {
+        setLoadingYoutube(false);
+      }
+    };
+
+    fetchYoutubeVideos();
+  }, []);
+
   const [uploadBpm, setUploadBpm] = useState('140');
   const [uploadDuration, setUploadDuration] = useState('180');
   const [uploadAudioUrl, setUploadAudioUrl] = useState('');
@@ -1244,52 +1316,54 @@ export default function App() {
                 </a>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px' }}>
-                {[
-                  { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
-                  { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
-                  { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
-                  { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
-                ].map((video, idx) => (
-                  <div key={idx} className="glass-card" style={{ padding: '12px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                    <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '10px', marginBottom: '12px' }}>
-                      <iframe 
-                        src={`https://www.youtube.com/embed/${video.embedId}`}
-                        title={video.title}
-                        style={{ width: '100%', height: '100%', border: 'none' }}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowFullScreen
-                      />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{video.title}</h4>
-                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px' }}>{video.duration}</span>
+              {loadingYoutube ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '60px 0', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ width: '40px', height: '40px', border: '4px solid rgba(255, 255, 255, 0.1)', borderTopColor: '#FF0000', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>Syncing live YouTube channel videos...</span>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px' }}>
+                  {youtubeVideos.map((video, idx) => (
+                    <div key={idx} className="glass-card" style={{ padding: '12px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '10px', marginBottom: '12px' }}>
+                        <iframe 
+                          src={`https://www.youtube.com/embed/${video.embedId}`}
+                          title={video.title}
+                          style={{ width: '100%', height: '100%', border: 'none' }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                          allowFullScreen
+                        />
                       </div>
-                      <button 
-                        className="neon-btn" 
-                        onClick={() => {
-                          const customTrack = {
-                            id: `yt-${video.embedId}`,
-                            title: video.title,
-                            artist: 'OG FUNK (YouTube)',
-                            genre: 'Phonk',
-                            bpm: '140',
-                            duration: 180,
-                            audioUrl: video.audioUrl,
-                            cover: `https://img.youtube.com/vi/${video.embedId}/mqdefault.jpg`
-                          };
-                          addTrack(customTrack);
-                          handlePlayTrack(customTrack, queue.length);
-                        }}
-                        style={{ width: '100%', padding: '6px 0', fontSize: '11px', color: '#00FF88', borderColor: '#00FF88', background: 'rgba(0,255,136,0.05)', borderRadius: '6px' }}
-                      >
-                        🎧 PLAY IN AUDIO PLAYER
-                      </button>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{video.title}</h4>
+                          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px' }}>{video.duration}</span>
+                        </div>
+                        <button 
+                          className="neon-btn" 
+                          onClick={() => {
+                            const customTrack = {
+                              id: `yt-${video.embedId}`,
+                              title: video.title,
+                              artist: 'OG FUNK (YouTube)',
+                              genre: 'Phonk',
+                              bpm: '140',
+                              duration: 180,
+                              audioUrl: video.audioUrl,
+                              cover: `https://img.youtube.com/vi/${video.embedId}/mqdefault.jpg`
+                            };
+                            addTrack(customTrack);
+                            handlePlayTrack(customTrack, queue.length);
+                          }}
+                          style={{ width: '100%', padding: '6px 0', fontSize: '11px', color: '#00FF88', borderColor: '#00FF88', background: 'rgba(0,255,136,0.05)', borderRadius: '6px' }}
+                        >
+                          🎧 PLAY IN AUDIO PLAYER
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
