@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '../services/supabaseClient';
+import { supabase, supabaseConfigured } from '../services/supabaseClient';
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -19,15 +19,19 @@ export const useAuthStore = create((set) => ({
   login: async (username, age) => {
     set({ loading: true });
     try {
-      // Clean username (alphanumeric and underscores only to match schema constraint)
       const cleanUsername = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
-      
-      // Check if user profile already exists in Supabase database
+
+      if (!supabaseConfigured) {
+        throw new Error('Supabase not configured');
+      }
+
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('username', cleanUsername)
         .maybeSingle();
+
+      if (error) throw error;
 
       let userRecord;
       if (profile) {
@@ -36,20 +40,19 @@ export const useAuthStore = create((set) => ({
           username: profile.username,
           age: parseInt(age),
           display_name: profile.display_name || profile.username.toUpperCase(),
-          avatar_url: profile.avatar_url || '/artwork/default_avatar.jpg',
+          avatar_url: profile.avatar_url || '/artwork/default_avatar.svg',
           is_artist: profile.is_artist,
           is_premium: profile.is_premium,
           bio: profile.bio || ''
         };
       } else {
-        // Create new user profile with valid database-friendly UUID
         const newId = generateUUID();
         const profileData = {
           id: newId,
           username: cleanUsername,
           display_name: username.toUpperCase(),
-          avatar_url: '/artwork/default_avatar.jpg',
-          is_artist: true, // Allow user uploads by default
+          avatar_url: '/artwork/default_avatar.svg',
+          is_artist: true,
           is_premium: false,
           bio: 'Born to drift 🏎️💨'
         };
@@ -69,14 +72,12 @@ export const useAuthStore = create((set) => ({
       localStorage.setItem('bass_phonk_user', JSON.stringify(userRecord));
       set({ user: userRecord, isAuthenticated: true });
     } catch (err) {
-      console.warn('Supabase profile sync failed, falling back locally:', err);
-      // Fallback local mock user using real UUID
       const fallbackUser = {
         id: generateUUID(),
         username: username,
         age: parseInt(age),
         display_name: username.toUpperCase(),
-        avatar_url: '/artwork/default_avatar.jpg',
+        avatar_url: '/artwork/default_avatar.svg',
         is_artist: true,
         is_premium: false,
         bio: 'Born to drift 🏎️💨'

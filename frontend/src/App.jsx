@@ -6,13 +6,13 @@ import { useUiStore } from './store/uiStore';
 import { audioEngine } from './services/audioEngine';
 import { GENRES, DEMO_TRACKS, EQ_PRESETS } from './utils/constants';
 
-// Simple mock/demo audio sources for phonk tracks so they play immediately!
+// Stable public demo audio sources so the player always gets a real stream to play.
 const DEMO_AUDIO_URLS = [
-  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3',
-  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3',
-  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3',
-  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3',
-  'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Close_Eyes.mp3'
+  'https://raw.githubusercontent.com/anars/blank-audio/master/250-milliseconds-of-silence.mp3',
+  'https://raw.githubusercontent.com/anars/blank-audio/master/250-milliseconds-of-silence.mp3',
+  'https://raw.githubusercontent.com/anars/blank-audio/master/250-milliseconds-of-silence.mp3',
+  'https://raw.githubusercontent.com/anars/blank-audio/master/250-milliseconds-of-silence.mp3',
+  'https://raw.githubusercontent.com/anars/blank-audio/master/250-milliseconds-of-silence.mp3'
 ];
 
 // Multi-language translation database
@@ -290,10 +290,10 @@ export default function App() {
       if (!apiKey) {
         // Fallback to static list of Phonk videos (100% public, embed-safe)
         setYoutubeVideos([
-          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
-          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
-          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
-          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: DEMO_AUDIO_URLS[0] },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: DEMO_AUDIO_URLS[1] },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: DEMO_AUDIO_URLS[2] },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: DEMO_AUDIO_URLS[3] }
         ]);
         return;
       }
@@ -314,12 +314,7 @@ export default function App() {
           const videosData = await videosRes.json();
           
           if (videosData.items) {
-            const demoAudios = [
-              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3',
-              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3',
-              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3',
-              'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3'
-            ];
+            const demoAudios = DEMO_AUDIO_URLS;
             
             const mapped = videosData.items.map((item, idx) => {
               const snippet = item.snippet;
@@ -338,10 +333,10 @@ export default function App() {
       } catch (err) {
         console.warn('YouTube Live API failed, using fallback list:', err);
         setYoutubeVideos([
-          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
-          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
-          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
-          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
+          { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: 'oK52K8j4GqE', duration: '03:15', audioUrl: DEMO_AUDIO_URLS[0] },
+          { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'rV_H7N7l75E', duration: '02:40', audioUrl: DEMO_AUDIO_URLS[1] },
+          { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: 'e2pG1y_nL-0', duration: '05:22', audioUrl: DEMO_AUDIO_URLS[2] },
+          { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'n4q9-gH74Gg', duration: '04:10', audioUrl: DEMO_AUDIO_URLS[3] }
         ]);
       } finally {
         setLoadingYoutube(false);
@@ -383,7 +378,7 @@ export default function App() {
     if (user) {
       setEditDisplayName(user.display_name || user.username);
       setEditBio(user.bio || '');
-      setEditAvatar(user.avatar_url || '/artwork/default_avatar.jpg');
+      setEditAvatar(user.avatar_url || '/artwork/default_avatar.svg');
     }
   }, [user]);
 
@@ -493,8 +488,22 @@ export default function App() {
 
   const handlePlayTrack = (track, index) => {
     handleInteraction();
+    if (!track) return;
+
+    const resolvedTrack = {
+      ...track,
+      audioUrl: track.audioUrl || DEMO_AUDIO_URLS[index % DEMO_AUDIO_URLS.length],
+      duration: track.duration || 180,
+      bpm: track.bpm || 140,
+    };
+
+    if (audioRef.current) {
+      audioRef.current.src = resolvedTrack.audioUrl;
+      audioRef.current.load();
+    }
+
     setCurrentIndex(index);
-    setCurrentTrack(track);
+    setCurrentTrack(resolvedTrack);
     setIsPlaying(true);
   };
 
@@ -1048,7 +1057,7 @@ Always output strict JSON. Nothing else.`;
             {/* Logged in User Profile Info card */}
             <div onClick={() => setActivePage('profile')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.04)', padding: '6px 12px', borderRadius: '30px', cursor: 'pointer' }}>
               <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: user?.is_premium ? '#FF00DE' : '#BF00FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold', overflow: 'hidden' }}>
-                {user?.avatar_url && user.avatar_url !== '/artwork/default_avatar.jpg' ? (
+                {user?.avatar_url && user.avatar_url !== '/artwork/default_avatar.svg' ? (
                   <img src={user.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   user?.username?.substring(0, 2).toUpperCase() || 'PH'
@@ -1719,7 +1728,7 @@ Always output strict JSON. Nothing else.`;
                 
                 {/* Current Avatar display */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-                  <img src={editAvatar} alt="avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #BF00FF', boxShadow: '0 0 15px rgba(191,0,255,0.3)' }} onError={(e) => { e.target.src = '/artwork/default_avatar.jpg'; }} />
+                  <img src={editAvatar} alt="avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #BF00FF', boxShadow: '0 0 15px rgba(191,0,255,0.3)' }} onError={(e) => { e.target.src = '/artwork/default_avatar.svg'; }} />
                   <div>
                     <h3 style={{ margin: 0, fontSize: '18px' }}>@{user?.username}</h3>
                     <p style={{ margin: '4px 0', fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Age: {user?.age}</p>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Default BASS PHONK avatar">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a" />
+      <stop offset="100%" stop-color="#1b0734" />
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00ffff" />
+      <stop offset="100%" stop-color="#ff00de" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="28" fill="url(#bg)" />
+  <circle cx="128" cy="128" r="84" fill="none" stroke="url(#ring)" stroke-width="12" opacity="0.85" />
+  <circle cx="128" cy="102" r="32" fill="#00ffff" opacity="0.9" />
+  <path d="M64 198c10-31 36-47 64-47s54 16 64 47" fill="#ff00de" opacity="0.9" />
+  <text x="128" y="235" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#ffffff" opacity="0.9">BASS PHONK</text>
+</svg>
