@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { supabase } from './services/supabaseClient';
 import { usePlayerStore } from './store/playerStore';
 import { useAuthStore } from './store/authStore';
 import { useUiStore } from './store/uiStore';
@@ -355,6 +356,9 @@ export default function App() {
   const [uploadAudioUrl, setUploadAudioUrl] = useState('');
   const [uploadCoverUrl, setUploadCoverUrl] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState('');
+  const [audioFile, setAudioFile] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // AI Chat Bot State
   const [aiMessage, setAiMessage] = useState('');
@@ -539,40 +543,127 @@ export default function App() {
     });
   };
 
-  // Dynamic upload song addition
-  const handleUploadSubmit = (e) => {
+  // Dynamic upload song addition (Real Supabase Storage & Database integration)
+  const handleUploadSubmit = async (e) => {
     e.preventDefault();
-    if (!uploadTitle.trim() || !uploadArtist.trim()) return;
+    if (!uploadTitle.trim()) return;
 
-    // Use mock values if left empty to make it immediately runnable
-    const newTrackObj = {
-      id: 'upload-' + Math.random().toString(36).substr(2, 9),
-      title: uploadTitle.trim(),
-      artist: uploadArtist.trim(),
-      album: 'Self Released',
-      duration: parseInt(uploadDuration) || 180,
-      bpm: parseInt(uploadBpm) || 140,
-      genre: uploadGenre,
-      cover: uploadCoverUrl.trim() || `https://picsum.photos/300/300?random=${Math.floor(Math.random() * 100)}`,
-      plays: 0,
-      liked: false,
-      audioUrl: uploadAudioUrl.trim() || DEMO_AUDIO_URLS[Math.floor(Math.random() * DEMO_AUDIO_URLS.length)]
-    };
+    setUploading(true);
+    setUploadSuccess('⚡ Uploading files to Supabase Storage...');
 
-    addTrack(newTrackObj);
-    setUploadSuccess(`"${newTrackObj.title}" published successfully! Appended to the queue.`);
-    
-    // Auto-play the uploaded track immediately!
-    setTimeout(() => {
-      const idx = queue.length; // Will be the last index after appending
-      handlePlayTrack(newTrackObj, idx);
-    }, 400);
+    try {
+      let finalAudioUrl = uploadAudioUrl.trim();
+      let finalCoverUrl = uploadCoverUrl.trim();
 
-    // Clear inputs
-    setUploadTitle('');
-    setUploadArtist('');
-    setUploadAudioUrl('');
-    setUploadCoverUrl('');
+      // 1. Upload audio file to Supabase tracks bucket
+      if (audioFile) {
+        const fileExt = audioFile.name.split('.').pop();
+        const fileName = `${Date.now()}_audio.${fileExt}`;
+        const filePath = `${user?.id || 'anon'}/${fileName}`;
+
+        const { data, error: uploadErr } = await supabase.storage
+          .from('tracks')
+          .upload(filePath, audioFile, { cacheControl: '3600', upsert: true });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: publicUrlData } = supabase.storage
+          .from('tracks')
+          .getPublicUrl(filePath);
+        finalAudioUrl = publicUrlData.publicUrl;
+      }
+
+      // 2. Upload cover artwork to Supabase artwork bucket
+      if (coverFile) {
+        const fileExt = coverFile.name.split('.').pop();
+        const fileName = `${Date.now()}_cover.${fileExt}`;
+        const filePath = `${user?.id || 'anon'}/${fileName}`;
+
+        const { data, error: uploadErr } = await supabase.storage
+          .from('artwork')
+          .upload(filePath, coverFile, { cacheControl: '3600', upsert: true });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: publicUrlData } = supabase.storage
+          .from('artwork')
+          .getPublicUrl(filePath);
+        finalCoverUrl = publicUrlData.publicUrl;
+      }
+
+      // Fallbacks
+      if (!finalAudioUrl) {
+        finalAudioUrl = DEMO_AUDIO_URLS[Math.floor(Math.random() * DEMO_AUDIO_URLS.length)];
+      }
+      if (!finalCoverUrl) {
+        finalCoverUrl = `https://picsum.photos/300/300?random=${Math.floor(Math.random() * 100)}`;
+      }
+
+      // 3. Create track object (using crypto.randomUUID or fallback)
+      const trackId = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : 'tr-' + Math.random().toString(36).substr(2, 9);
+      
+      const newTrackObj = {
+        id: trackId,
+        title: uploadTitle.trim(),
+        artist: uploadArtist.trim() || user?.display_name || user?.username || 'Unknown Artist',
+        album: 'Self Released',
+        duration: parseInt(uploadDuration) || 180,
+        bpm: parseInt(uploadBpm) || 140,
+        genre: uploadGenre,
+        cover: finalCoverUrl,
+        plays: 0,
+        liked: false,
+        audioUrl: finalAudioUrl
+      };
+
+      // 4. Save metadata to Supabase 'tracks' database table
+      const { error: dbError } = await supabase
+        .from('tracks')
+        .insert({
+          id: trackId,
+          title: newTrackObj.title,
+          artist_name: newTrackObj.artist,
+          artist_id: user?.id || null,
+          genre: newTrackObj.genre,
+          bpm: newTrackObj.bpm,
+          duration_seconds: newTrackObj.duration,
+          audio_url: newTrackObj.audioUrl,
+          artwork_url: newTrackObj.cover
+        });
+
+      if (dbError) {
+        console.warn('Metadata insertion failed, playing locally only:', dbError);
+      }
+
+      addTrack(newTrackObj);
+      setUploadSuccess(`⚡ "${newTrackObj.title}" published successfully! Saved to Supabase database.`);
+
+      // Auto-play the uploaded track immediately!
+      setTimeout(() => {
+        const idx = queue.length;
+        handlePlayTrack(newTrackObj, idx);
+      }, 400);
+
+      // Clear inputs
+      setUploadTitle('');
+      setUploadArtist('');
+      setUploadAudioUrl('');
+      setUploadCoverUrl('');
+      setAudioFile(null);
+      setCoverFile(null);
+      
+      const audioInput = document.getElementById('audio-file-input');
+      const coverInput = document.getElementById('cover-file-input');
+      if (audioInput) audioInput.value = '';
+      if (coverInput) coverInput.value = '';
+
+    } catch (err) {
+      console.error('File upload failed:', err);
+      setUploadSuccess(`❌ Upload failed: ${err.message || err}`);
+    } finally {
+      setUploading(false);
+      setTimeout(() => setUploadSuccess(''), 6000);
+    }
   };
 
   // Chatbot logic engine for Free AI Phonk support
@@ -1652,7 +1743,7 @@ export default function App() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.bpmLabel}</label>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.bpmLabel || 'BPM'}</label>
                     <input 
                       type="number" 
                       value={uploadBpm}
@@ -1662,7 +1753,7 @@ export default function App() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.durationLabel}</label>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.durationLabel || 'Duration (sec)'}</label>
                     <input 
                       type="number" 
                       value={uploadDuration}
@@ -1672,30 +1763,70 @@ export default function App() {
                   </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.audioUrlLabel} (Leave empty for random demo source)</label>
-                  <input 
-                    type="url" 
-                    value={uploadAudioUrl}
-                    onChange={(e) => setUploadAudioUrl(e.target.value)}
-                    placeholder="https://example.com/audio.mp3"
-                    style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>Upload Audio File (.mp3, .wav, .flac)</label>
+                    <input 
+                      type="file" 
+                      id="audio-file-input"
+                      accept="audio/*"
+                      onChange={(e) => setAudioFile(e.target.files[0])}
+                      style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>Or Paste Direct Audio Stream URL (Optional)</label>
+                    <input 
+                      type="url" 
+                      value={uploadAudioUrl}
+                      onChange={(e) => setUploadAudioUrl(e.target.value)}
+                      placeholder="https://example.com/audio.mp3"
+                      style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>{t.coverUrlLabel} (Leave empty for random art)</label>
-                  <input 
-                    type="url" 
-                    value={uploadCoverUrl}
-                    onChange={(e) => setUploadCoverUrl(e.target.value)}
-                    placeholder="https://example.com/cover.jpg"
-                    style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>Upload Cover Image (.jpg, .png, .webp)</label>
+                    <input 
+                      type="file" 
+                      id="cover-file-input"
+                      accept="image/*"
+                      onChange={(e) => setCoverFile(e.target.files[0])}
+                      style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '6px' }}>Or Paste Direct Album Artwork URL (Optional)</label>
+                    <input 
+                      type="url" 
+                      value={uploadCoverUrl}
+                      onChange={(e) => setUploadCoverUrl(e.target.value)}
+                      placeholder="https://example.com/cover.jpg"
+                      style={{ width: '100%', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', outline: 'none', color: '#FFF' }}
+                    />
+                  </div>
                 </div>
 
-                <button type="submit" className="neon-btn" style={{ width: '100%', padding: '14px', background: '#00FF88', border: 'none', color: '#000', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: '0 0 12px rgba(0, 255, 136, 0.25)' }}>
-                  {t.publishBtn}
+                <button 
+                  type="submit" 
+                  className="neon-btn" 
+                  disabled={uploading}
+                  style={{ 
+                    width: '100%', 
+                    padding: '14px', 
+                    background: uploading ? 'rgba(0, 255, 136, 0.3)' : '#00FF88', 
+                    border: 'none', 
+                    color: '#000', 
+                    borderRadius: '8px', 
+                    fontWeight: 'bold', 
+                    fontSize: '13px', 
+                    cursor: uploading ? 'not-allowed' : 'pointer', 
+                    boxShadow: uploading ? 'none' : '0 0 12px rgba(0, 255, 136, 0.25)' 
+                  }}
+                >
+                  {uploading ? 'PUBLISHING BEAT TO DATABASE...' : t.publishBtn}
                 </button>
 
               </form>

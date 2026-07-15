@@ -1,4 +1,12 @@
 import { create } from 'zustand';
+import { supabase } from '../services/supabaseClient';
+
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 const storedUser = localStorage.getItem('bass_phonk_user');
 const initialUser = storedUser ? JSON.parse(storedUser) : null;
@@ -8,25 +16,97 @@ export const useAuthStore = create((set) => ({
   isAuthenticated: !!initialUser,
   loading: false,
 
-  login: (username, age) => {
-    const newUser = {
-      id: 'mock-user-id-' + Math.random().toString(36).substr(2, 9),
-      username,
-      age: parseInt(age),
-      display_name: username.toUpperCase(),
-      avatar_url: '/artwork/default_avatar.jpg',
-      is_artist: true, // Allow user to upload songs by default
-      is_premium: false
-    };
-    localStorage.setItem('bass_phonk_user', JSON.stringify(newUser));
-    set({ user: newUser, isAuthenticated: true });
+  login: async (username, age) => {
+    set({ loading: true });
+    try {
+      // Clean username (alphanumeric and underscores only to match schema constraint)
+      const cleanUsername = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
+      
+      // Check if user profile already exists in Supabase database
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', cleanUsername)
+        .maybeSingle();
+
+      let userRecord;
+      if (profile) {
+        userRecord = {
+          id: profile.id,
+          username: profile.username,
+          age: parseInt(age),
+          display_name: profile.display_name || profile.username.toUpperCase(),
+          avatar_url: profile.avatar_url || '/artwork/default_avatar.jpg',
+          is_artist: profile.is_artist,
+          is_premium: profile.is_premium,
+          bio: profile.bio || ''
+        };
+      } else {
+        // Create new user profile with valid database-friendly UUID
+        const newId = generateUUID();
+        const profileData = {
+          id: newId,
+          username: cleanUsername,
+          display_name: username.toUpperCase(),
+          avatar_url: '/artwork/default_avatar.jpg',
+          is_artist: true, // Allow user uploads by default
+          is_premium: false,
+          bio: 'Born to drift 🏎️💨'
+        };
+
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert(profileData);
+
+        if (insertError) throw insertError;
+
+        userRecord = {
+          ...profileData,
+          age: parseInt(age)
+        };
+      }
+
+      localStorage.setItem('bass_phonk_user', JSON.stringify(userRecord));
+      set({ user: userRecord, isAuthenticated: true });
+    } catch (err) {
+      console.warn('Supabase profile sync failed, falling back locally:', err);
+      // Fallback local mock user using real UUID
+      const fallbackUser = {
+        id: generateUUID(),
+        username: username,
+        age: parseInt(age),
+        display_name: username.toUpperCase(),
+        avatar_url: '/artwork/default_avatar.jpg',
+        is_artist: true,
+        is_premium: false,
+        bio: 'Born to drift 🏎️💨'
+      };
+      localStorage.setItem('bass_phonk_user', JSON.stringify(fallbackUser));
+      set({ user: fallbackUser, isAuthenticated: true });
+    } finally {
+      set({ loading: false });
+    }
   },
 
-  updateProfile: (updatedData) => set((state) => {
-    const updatedUser = { ...state.user, ...updatedData };
-    localStorage.setItem('bass_phonk_user', JSON.stringify(updatedUser));
-    return { user: updatedUser };
-  }),
+  updateProfile: async (updatedData) => {
+    set((state) => {
+      const updatedUser = { ...state.user, ...updatedData };
+      localStorage.setItem('bass_phonk_user', JSON.stringify(updatedUser));
+      
+      // Update asynchronously in Supabase database
+      supabase.from('profiles').update({
+        display_name: updatedUser.display_name,
+        bio: updatedUser.bio,
+        avatar_url: updatedUser.avatar_url,
+        is_artist: updatedUser.is_artist,
+        is_premium: updatedUser.is_premium
+      }).eq('id', updatedUser.id).then(({ error }) => {
+        if (error) console.error('Error syncing profile update to Supabase:', error);
+      });
+
+      return { user: updatedUser };
+    });
+  },
 
   logout: () => {
     localStorage.removeItem('bass_phonk_user');
