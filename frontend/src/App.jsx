@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { usePlayerStore } from './store/playerStore';
 import { useAuthStore } from './store/authStore';
 import { useUiStore } from './store/uiStore';
@@ -1820,6 +1821,7 @@ export default function App() {
 
       </footer>
 
+      <Analytics />
     </div>
   );
 }
