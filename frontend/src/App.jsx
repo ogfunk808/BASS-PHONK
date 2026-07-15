@@ -667,7 +667,8 @@ export default function App() {
   };
 
   // Chatbot logic engine for Free AI Phonk support
-  const handleSendAiMessage = () => {
+  // Chatbot logic engine for Free AI Phonk support (Google Gemini API & player control integration)
+  const handleSendAiMessage = async () => {
     if (!aiMessage.trim()) return;
 
     const userText = aiMessage;
@@ -675,66 +676,161 @@ export default function App() {
     setAiChatHistory(prev => [...prev, userMessageObj]);
     setAiMessage('');
 
-    // Process matching rules in background
-    setTimeout(() => {
+    const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+    if (!geminiApiKey) {
+      // Fallback local rule processing (if API key is missing)
+      setTimeout(() => {
+        const lower = userText.toLowerCase();
+        let reply = '';
+        if (lower.includes('play')) {
+          const found = queue.find(t => 
+            lower.includes(t.title.toLowerCase()) || 
+            lower.includes(t.artist.toLowerCase())
+          );
+          if (found) {
+            const idx = queue.indexOf(found);
+            handlePlayTrack(found, idx);
+            reply = `🏎️ Vibe matched! Starting playback of "${found.title}" by ${found.artist} instantly. Crank up the bass!`;
+          } else {
+            const randIdx = Math.floor(Math.random() * queue.length);
+            const randTrack = queue[randIdx];
+            handlePlayTrack(randTrack, randIdx);
+            reply = `🎵 I couldn't find that exact song, so I'm playing a top-tier track: "${randTrack.title}" by ${randTrack.artist}!`;
+          }
+        } else if (lower.includes('bass') || lower.includes('grave') || lower.includes('басс') || lower.includes('бас')) {
+          let level = 100;
+          const matches = lower.match(/\d+/);
+          if (matches) level = Math.min(parseInt(matches[0]), 100);
+          setBassBoost(level);
+          reply = `🔊 Boom! Bass boost configured to ${level}%. Subwoofers are officially loaded and pulsing!`;
+        } else if (lower.includes('slowed') || lower.includes('slow') || lower.includes('замедлить')) {
+          setSpeed(0.8);
+          reply = `🌙 Slowed & Reverb mode active! Cruising speed set to 0.8x. Enjoy the dark atmosphere.`;
+        } else if (lower.includes('speed') || lower.includes('скорость') || lower.includes('rate')) {
+          let factor = 1.25;
+          const matches = lower.match(/[\d.]+/);
+          if (matches) factor = parseFloat(matches[0]);
+          setSpeed(factor);
+          reply = `⚡ Speed set to ${factor}x. Hyper-drive mode engaged.`;
+        } else if (lower.includes('volume') || lower.includes('громкость') || lower.includes('ampli')) {
+          let vol = 3.0; // 300%
+          const matches = lower.match(/\d+/);
+          if (matches) vol = parseInt(matches[0]) / 100;
+          setVolume(vol);
+          reply = `🚀 Audio volume set to ${Math.round(vol * 100)}%. Gain amplification activated via the Web Audio booster!`;
+        } else if (lower.includes('recommend') || lower.includes('совет') || lower.includes('посоветуй')) {
+          const randIdx = Math.floor(Math.random() * queue.length);
+          const randTrack = queue[randIdx];
+          reply = `🎧 I highly recommend checking out "${randTrack.title}" by ${randTrack.artist}. It features solid sub-bass. Type "play ${randTrack.title.toLowerCase()}" to listen!`;
+        } else if (lower.includes('help') || lower.includes('помощь') || lower.includes('ajuda')) {
+          reply = `🤖 Here is what you can ask me:\n• "play [song name]" (e.g. "play Metamorphosis")\n• "bass boost [0-100]" (e.g. "bass boost 100")\n• "slowed" (slow down playback)\n• "volume [percentage]" (e.g. "volume 300")\n• "recommend a song"`;
+        } else {
+          reply = `💀 Phonk engine listening! Ask me to "play [track]", "bass boost 100", "slowed", or "volume 500" for extreme loudness.`;
+        }
+        setAiChatHistory(prev => [...prev, { sender: 'ai', text: reply }]);
+      }, 600);
+      return;
+    }
+
+    const typingMessageId = Date.now() + '-typing';
+    setAiChatHistory(prev => [...prev, { id: typingMessageId, sender: 'ai', text: '⚡ DJ is thinking...' }]);
+
+    try {
+      const systemInstruction = `You are the "BASS PHONK AI DJ", a hardcore, high-energy Phonk music DJ and assistant.
+You speak in a cool phonk/drift style, using emojis like 🏎️, 🔊, ⚡, 💀, 🔔.
+You can control the user's music player. To perform actions, you MUST reply in JSON format with three fields:
+1. "reply": A string response to the user in your DJ persona.
+2. "command": A string indicating an action to take, or null if no action. Supported values:
+   - "play": to play a song (value is the song title/artist search term)
+   - "bass-boost": to adjust bass boost level (value is an integer 0-100)
+   - "speed": to adjust speed (value is a float 0.5-2.0)
+   - "volume": to adjust volume (value is a float 0.0-10.0)
+   - "recommend": to recommend a random song (value is null)
+3. "value": The parameter value for the command, or null.
+
+Example: If user says "put on Metamorphosis", reply:
+{"reply": "Cranking up Metamorphosis by Interworld! 🏎️⚡", "command": "play", "value": "Metamorphosis"}
+
+Always output strict JSON. Nothing else.`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: systemInstruction + "\n\nUser: " + userText }]
+              }
+            ]
+          })
+        }
+      );
+
+      const data = await res.json();
+      let responseText = data.candidates[0].content.parts[0].text;
+      
+      responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      const responseJson = JSON.parse(responseText);
+      const reply = responseJson.reply;
+      const command = responseJson.command;
+      const value = responseJson.value;
+
+      setAiChatHistory(prev => prev.filter(msg => msg.id !== typingMessageId));
+      setAiChatHistory(prev => [...prev, { sender: 'ai', text: reply }]);
+
+      if (command === 'play' && value) {
+        const found = queue.find(t => 
+          t.title.toLowerCase().includes(value.toLowerCase()) || 
+          t.artist.toLowerCase().includes(value.toLowerCase())
+        );
+        if (found) {
+          const idx = queue.indexOf(found);
+          handlePlayTrack(found, idx);
+        } else {
+          const randIdx = Math.floor(Math.random() * queue.length);
+          handlePlayTrack(queue[randIdx], randIdx);
+        }
+      } else if (command === 'bass-boost' && value !== null) {
+        setBassBoost(Math.min(Math.max(parseInt(value), 0), 100));
+      } else if (command === 'speed' && value !== null) {
+        setSpeed(Math.min(Math.max(parseFloat(value), 0.5), 2.0));
+      } else if (command === 'volume' && value !== null) {
+        setVolume(Math.min(Math.max(parseFloat(value), 0.0), 10.0));
+      } else if (command === 'recommend') {
+        const randIdx = Math.floor(Math.random() * queue.length);
+        handlePlayTrack(queue[randIdx], randIdx);
+      }
+
+    } catch (err) {
+      console.error('Gemini API call failed, falling back:', err);
+      setAiChatHistory(prev => prev.filter(msg => msg.id !== typingMessageId));
+      
       const lower = userText.toLowerCase();
       let reply = '';
-      
       if (lower.includes('play')) {
         const found = queue.find(t => 
           lower.includes(t.title.toLowerCase()) || 
           lower.includes(t.artist.toLowerCase())
         );
-
         if (found) {
           const idx = queue.indexOf(found);
           handlePlayTrack(found, idx);
-          reply = `🏎️ Vibe matched! Starting playback of "${found.title}" by ${found.artist} instantly. Crank up the bass!`;
+          reply = `🏎️ Vibe matched! Starting playback of "${found.title}" by ${found.artist} instantly.`;
         } else {
           const randIdx = Math.floor(Math.random() * queue.length);
-          const randTrack = queue[randIdx];
-          handlePlayTrack(randTrack, randIdx);
-          reply = `🎵 I couldn't find that exact song, so I'm playing a top-tier track: "${randTrack.title}" by ${randTrack.artist}!`;
+          handlePlayTrack(queue[randIdx], randIdx);
+          reply = `🎵 Playing a fallback track: "${queue[randIdx].title}" by ${queue[randIdx].artist}!`;
         }
-      } else if (lower.includes('bass') || lower.includes('grave') || lower.includes('басс') || lower.includes('бас')) {
-        let level = 100;
-        const matches = lower.match(/\d+/);
-        if (matches) {
-          level = Math.min(parseInt(matches[0]), 100);
-        }
-        setBassBoost(level);
-        reply = `🔊 Boom! Bass boost configured to ${level}%. Subwoofers are officially loaded and pulsing!`;
-      } else if (lower.includes('slowed') || lower.includes('slow') || lower.includes('замедлить')) {
-        setSpeed(0.8);
-        reply = `🌙 Slowed & Reverb mode active! Cruising speed set to 0.8x. Enjoy the dark atmosphere.`;
-      } else if (lower.includes('speed') || lower.includes('скорость') || lower.includes('rate')) {
-        let factor = 1.25;
-        const matches = lower.match(/[\d.]+/);
-        if (matches) {
-          factor = parseFloat(matches[0]);
-        }
-        setSpeed(factor);
-        reply = `⚡ Speed set to ${factor}x. Hyper-drive mode engaged.`;
-      } else if (lower.includes('volume') || lower.includes('громкость') || lower.includes('ampli')) {
-        let vol = 3.0; // 300%
-        const matches = lower.match(/\d+/);
-        if (matches) {
-          vol = parseInt(matches[0]) / 100;
-        }
-        setVolume(vol);
-        reply = `🚀 Audio volume set to ${Math.round(vol * 100)}%. Gain amplification activated via the Web Audio booster!`;
-      } else if (lower.includes('recommend') || lower.includes('совет') || lower.includes('посоветуй')) {
-        const randIdx = Math.floor(Math.random() * queue.length);
-        const randTrack = queue[randIdx];
-        reply = `🎧 I highly recommend checking out "${randTrack.title}" by ${randTrack.artist}. It features solid sub-bass. Type "play ${randTrack.title.toLowerCase()}" to listen!`;
-      } else if (lower.includes('help') || lower.includes('помощь') || lower.includes('ajuda')) {
-        reply = `🤖 Here is what you can ask me:\n• "play [song name]" (e.g. "play Metamorphosis")\n• "bass boost [0-100]" (e.g. "bass boost 100")\n• "slowed" (slow down playback)\n• "volume [percentage]" (e.g. "volume 300")\n• "recommend a song"`;
       } else {
-        reply = `💀 Phonk engine listening! Ask me to "play [track]", "bass boost 100", "slowed", or "volume 500" for extreme loudness.`;
+        reply = `💀 Phonk engine listening! (Gemini offline fallback). Ask me to "play [track]".`;
       }
-
       setAiChatHistory(prev => [...prev, { sender: 'ai', text: reply }]);
-    }, 600);
+    }
   };
 
   // Formatter for time display
