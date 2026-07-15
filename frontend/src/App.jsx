@@ -1246,10 +1246,10 @@ export default function App() {
               
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px' }}>
                 {[
-                  { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15' },
-                  { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40' },
-                  { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22' },
-                  { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10' }
+                  { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Why_Not.mp3' },
+                  { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Murder_In_My_Mind.mp3' },
+                  { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Override.mp3' },
+                  { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10', audioUrl: 'https://pub-c5e31b5cdafb419a86616ddde59f971a.r2.dev/Metamorphosis.mp3' }
                 ].map((video, idx) => (
                   <div key={idx} className="glass-card" style={{ padding: '12px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
                     <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '10px', marginBottom: '12px' }}>
@@ -1261,9 +1261,31 @@ export default function App() {
                         allowFullScreen
                       />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{video.title}</h4>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px' }}>{video.duration}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{video.title}</h4>
+                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px' }}>{video.duration}</span>
+                      </div>
+                      <button 
+                        className="neon-btn" 
+                        onClick={() => {
+                          const customTrack = {
+                            id: `yt-${video.embedId}`,
+                            title: video.title,
+                            artist: 'OG FUNK (YouTube)',
+                            genre: 'Phonk',
+                            bpm: '140',
+                            duration: 180,
+                            audioUrl: video.audioUrl,
+                            cover: `https://img.youtube.com/vi/${video.embedId}/mqdefault.jpg`
+                          };
+                          addTrack(customTrack);
+                          handlePlayTrack(customTrack, queue.length);
+                        }}
+                        style={{ width: '100%', padding: '6px 0', fontSize: '11px', color: '#00FF88', borderColor: '#00FF88', background: 'rgba(0,255,136,0.05)', borderRadius: '6px' }}
+                      >
+                        🎧 PLAY IN AUDIO PLAYER
+                      </button>
                     </div>
                   </div>
                 ))}
