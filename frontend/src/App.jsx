@@ -78,6 +78,7 @@ const TRANSLATIONS = {
     coverUrlLabel: 'Cover Art Image URL',
     publishBtn: 'PUBLISH TRACK ⚡',
     youtube: 'YouTube Channel 📺',
+    loudly: 'Loudly AI Remix 🎵',
   },
   pt: {
     home: 'Início',
@@ -141,6 +142,7 @@ const TRANSLATIONS = {
     coverUrlLabel: 'Link da Capa do Álbum',
     publishBtn: 'PUBLICAR MÚSICA ⚡',
     youtube: 'Canal do YouTube 📺',
+    loudly: 'Loudly AI Remix 🎵',
   },
   ru: {
     home: 'Главная',
@@ -204,6 +206,7 @@ const TRANSLATIONS = {
     coverUrlLabel: 'Ссылка на обложку',
     publishBtn: 'ОПУБЛИКОВАТЬ ⚡',
     youtube: 'YouTube Канал 📺',
+    loudly: 'Loudly ИИ Ремикс 🎵',
   }
 };
 
@@ -675,6 +678,9 @@ export default function App() {
           </button>
           <button className={`neon-btn ${activePage === 'ai-dj' ? 'active' : ''}`} onClick={() => { setActivePage('ai-dj'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'ai-dj' ? 'rgba(0, 255, 255, 0.12)' : 'transparent', border: 'none', color: '#00FFFF', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%', fontWeight: 'bold' }}>
             <span style={{ fontSize: '15px' }}>🤖</span> {t.aiDj}
+          </button>
+          <button className={`neon-btn ${activePage === 'loudly' ? 'active' : ''}`} onClick={() => { setActivePage('loudly'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'loudly' ? 'rgba(191, 0, 255, 0.12)' : 'transparent', border: 'none', color: '#BF00FF', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '15px' }}>🎵</span> {t.loudly || 'Loudly AI Remix'}
           </button>
           
           <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '10px 0' }} />
@@ -1187,6 +1193,26 @@ export default function App() {
 
               </div>
 
+            </div>
+          )}
+
+          {/* PAGE: LOUDLY AI REMIX */}
+          {activePage === 'loudly' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div>
+                  <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '26px', fontWeight: '900', margin: 0, color: '#BF00FF', textShadow: '0 0 10px rgba(191, 0, 255, 0.4)' }}>Loudly AI Remix & Soundtracks</h2>
+                  <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.65)', margin: '4px 0 0 0' }}>Generate, customize, and remix top-tier AI soundtracks and heavy drift phonk beats on the fly.</p>
+                </div>
+              </div>
+              <div className="glass-card" style={{ padding: '4px', borderRadius: '16px', background: '#000000', border: '1px solid rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
+                <iframe 
+                  src="https://soundtracks.loudly.com/" 
+                  title="Loudly AI Soundtracks" 
+                  style={{ width: '100%', height: isMobile ? '70vh' : '75vh', border: 'none', display: 'block', borderRadius: '12px' }}
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                />
+              </div>
             </div>
           )}
 
