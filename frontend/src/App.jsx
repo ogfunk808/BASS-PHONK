@@ -79,6 +79,12 @@ const TRANSLATIONS = {
     publishBtn: 'PUBLISH TRACK ⚡',
     youtube: 'YouTube Channel 📺',
     loudly: 'Loudly AI Remix 🎵',
+    youtubeVideos: 'YouTube Videos 🎥',
+    nowPlaying: 'Now Playing 🎵',
+    likes: 'Likes',
+    comments: 'Comments',
+    commentPlaceholder: 'Write a comment...',
+    postComment: 'Comment ⚡',
   },
   pt: {
     home: 'Início',
@@ -143,6 +149,12 @@ const TRANSLATIONS = {
     publishBtn: 'PUBLICAR MÚSICA ⚡',
     youtube: 'Canal do YouTube 📺',
     loudly: 'Loudly AI Remix 🎵',
+    youtubeVideos: 'Vídeos do YouTube 🎥',
+    nowPlaying: 'Tocando Agora 🎵',
+    likes: 'Curtidas',
+    comments: 'Comentários',
+    commentPlaceholder: 'Escreva um comentário...',
+    postComment: 'Comentar ⚡',
   },
   ru: {
     home: 'Главная',
@@ -207,6 +219,12 @@ const TRANSLATIONS = {
     publishBtn: 'ОПУБЛИКОВАТЬ ⚡',
     youtube: 'YouTube Канал 📺',
     loudly: 'Loudly ИИ Ремикс 🎵',
+    youtubeVideos: 'YouTube Видео 🎥',
+    nowPlaying: 'Сейчас Играет 🎵',
+    likes: 'Понравилось',
+    comments: 'Комментарии',
+    commentPlaceholder: 'Написать комментарий...',
+    postComment: 'Отправить ⚡',
   }
 };
 
@@ -243,6 +261,23 @@ export default function App() {
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadArtist, setUploadArtist] = useState('');
   const [uploadGenre, setUploadGenre] = useState('drift');
+
+  // Like & Comment states
+  const [commentsByTrack, setCommentsByTrack] = useState({
+    '1': [
+      { id: 1, user: 'Drift_King', text: 'That bass pattern is insane! 🔥', timestamp: '2 mins ago' },
+      { id: 2, user: 'PhonkFanatic', text: 'Cowbell goes crazy 🔔', timestamp: '1 min ago' }
+    ]
+  });
+  const [likesByTrack, setLikesByTrack] = useState({
+    '1': 142,
+    '2': 89,
+    '3': 256,
+    '4': 310,
+    '5': 198
+  });
+  const [userLikedTracks, setUserLikedTracks] = useState(new Set());
+  const [newCommentText, setNewCommentText] = useState('');
   const [uploadBpm, setUploadBpm] = useState('140');
   const [uploadDuration, setUploadDuration] = useState('180');
   const [uploadAudioUrl, setUploadAudioUrl] = useState('');
@@ -667,9 +702,9 @@ export default function App() {
           <button className={`neon-btn ${activePage === 'car-mode' ? 'active' : ''}`} onClick={() => { setActivePage('car-mode'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'car-mode' ? 'rgba(191, 0, 255, 0.12)' : 'transparent', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <span style={{ fontSize: '15px' }}>🏁</span> {t.speedometer}
           </button>
-          <a href="https://youtube.com/@ogfunk808?si=6pcmeey4q8zIfZ96" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'transparent', border: 'none', color: '#FF0000', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%', textDecoration: 'none', fontWeight: 'bold' }}>
-            <span style={{ fontSize: '15px' }}>📺</span> {t.youtube || 'YouTube Channel'}
-          </a>
+          <button className={`neon-btn ${activePage === 'youtube' ? 'active' : ''}`} onClick={() => { setActivePage('youtube'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'youtube' ? 'rgba(255, 0, 0, 0.12)' : 'transparent', border: 'none', color: '#FF0000', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '15px' }}>🎥</span> {t.youtubeVideos || 'YouTube Videos'}
+          </button>
           <button className={`neon-btn ${activePage === 'wallpapers' ? 'active' : ''}`} onClick={() => { setActivePage('wallpapers'); if (isMobile) setIsSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: activePage === 'wallpapers' ? 'rgba(191, 0, 255, 0.12)' : 'transparent', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <span style={{ fontSize: '15px' }}>🖼️</span> {t.wallpapers}
           </button>
@@ -1196,6 +1231,182 @@ export default function App() {
             </div>
           )}
 
+          {/* PAGE: YOUTUBE VIDEOS */}
+          {activePage === 'youtube' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '26px', fontWeight: '900', margin: 0, color: '#FF0000', textShadow: '0 0 10px rgba(255,0,0,0.3)' }}>{t.youtubeVideos || 'YouTube Videos'}</h2>
+                  <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.65)', margin: '4px 0 0 0' }}>Watch and listen to the latest videos, tutorials, and beat showcases from our official YouTube Channel.</p>
+                </div>
+                <a href="https://youtube.com/@ogfunk808?si=6pcmeey4q8zIfZ96" target="_blank" rel="noopener noreferrer" className="neon-btn" style={{ padding: '8px 16px', background: 'rgba(255,0,0,0.1)', borderColor: '#FF0000', color: '#FF0000', textDecoration: 'none', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>
+                  📺 VISIT CHANNEL
+                </a>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px' }}>
+                {[
+                  { title: 'BASS PHONK 2026 - TOKYO SPEED SHADOWS MIX', embedId: '3nORe6y4j1U', duration: '03:15' },
+                  { title: 'COWBELL NIGHTS - PHONK MIX BY OG FUNK', embedId: 'T3m72iW7W7o', duration: '02:40' },
+                  { title: 'GYM PHONK - 1000% BASS BOOST DRIFT BEAT', embedId: '9GqjQx4V3gI', duration: '05:22' },
+                  { title: 'MEMPHIS DRIFT STREETS - OG FUNK SPECIAL', embedId: 'hOor9Hl3-4Q', duration: '04:10' }
+                ].map((video, idx) => (
+                  <div key={idx} className="glass-card" style={{ padding: '12px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '10px', marginBottom: '12px' }}>
+                      <iframe 
+                        src={`https://www.youtube.com/embed/${video.embedId}`}
+                        title={video.title}
+                        style={{ width: '100%', height: '100%', border: 'none' }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowFullScreen
+                      />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{video.title}</h4>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px' }}>{video.duration}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PAGE: NOW PLAYING DETAIL (LIKES & COMMENTS) */}
+          {activePage === 'now-playing' && (
+            <div>
+              <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '26px', fontWeight: '900', marginBottom: '24px', color: '#BF00FF' }}>{t.nowPlaying || 'Now Playing'}</h2>
+              {currentTrack ? (
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '40px', alignItems: 'flex-start' }}>
+                  {/* Left Column: Cover art and track info */}
+                  <div className="glass-card" style={{ padding: '24px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', width: isMobile ? '100%' : '350px', textAlign: 'center', flexShrink: 0 }}>
+                    <img 
+                      src={currentTrack.cover} 
+                      alt={currentTrack.title} 
+                      style={{ 
+                        width: '100%', 
+                        maxWidth: '280px', 
+                        aspectRatio: '1/1', 
+                        objectFit: 'cover', 
+                        borderRadius: '12px', 
+                        boxShadow: '0 8px 30px rgba(191, 0, 255, 0.25)', 
+                        marginBottom: '20px',
+                        animation: isPlaying ? 'spin 20s linear infinite' : 'none'
+                      }} 
+                    />
+                    <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 4px 0' }}>{currentTrack.title}</h3>
+                    <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px 0' }}>{currentTrack.artist}</p>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                      <span>BPM: {currentTrack.bpm || '130'}</span>
+                      <span>Genre: {currentTrack.genre || 'Phonk'}</span>
+                    </div>
+
+                    {/* Like button interaction */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <button 
+                        onClick={() => {
+                          const trackId = currentTrack.id || '1';
+                          const liked = userLikedTracks.has(trackId);
+                          const nextLiked = new Set(userLikedTracks);
+                          if (liked) {
+                            nextLiked.delete(trackId);
+                            setLikesByTrack({ ...likesByTrack, [trackId]: Math.max(0, (likesByTrack[trackId] || 0) - 1) });
+                          } else {
+                            nextLiked.add(trackId);
+                            setLikesByTrack({ ...likesByTrack, [trackId]: (likesByTrack[trackId] || 0) + 1 });
+                          }
+                          setUserLikedTracks(nextLiked);
+                        }}
+                        style={{ 
+                          background: userLikedTracks.has(currentTrack.id || '1') ? '#FF0040' : 'transparent',
+                          color: userLikedTracks.has(currentTrack.id || '1') ? '#FFF' : '#FF0040',
+                          border: '1px solid #FF0040',
+                          padding: '10px 24px', 
+                          borderRadius: '24px',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          boxShadow: userLikedTracks.has(currentTrack.id || '1') ? '0 0 15px rgba(255, 0, 64, 0.4)' : 'none',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <span>❤️</span> 
+                        {likesByTrack[currentTrack.id || '1'] || 0} {t.likes || 'Likes'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Comments Section */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+                    <div className="glass-card" style={{ padding: '24px', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', flexDirection: 'column', height: '400px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 16px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
+                        💬 {t.comments || 'Comments'} ({ (commentsByTrack[currentTrack.id || '1'] || []).length })
+                      </h3>
+                      
+                      {/* Comments list scrolling container */}
+                      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '6px', marginBottom: '16px' }}>
+                        {(commentsByTrack[currentTrack.id || '1'] || []).map((c) => (
+                          <div key={c.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '12px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                              <span style={{ fontWeight: 'bold', fontSize: '12px', color: '#00FFFF' }}>@{c.user}</span>
+                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{c.timestamp}</span>
+                            </div>
+                            <p style={{ margin: 0, fontSize: '13px', color: '#FFF' }}>{c.text}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Add comment form */}
+                      <form 
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (!newCommentText.trim()) return;
+                          const trackId = currentTrack.id || '1';
+                          const trackComments = commentsByTrack[trackId] || [];
+                          const updatedComments = [
+                            ...trackComments,
+                            {
+                              id: Date.now(),
+                              user: user?.username || 'Guest',
+                              text: newCommentText.trim(),
+                              timestamp: 'Just now'
+                            }
+                          ];
+                          setCommentsByTrack({
+                            ...commentsByTrack,
+                            [trackId]: updatedComments
+                          });
+                          setNewCommentText('');
+                        }}
+                        style={{ display: 'flex', gap: '10px' }}
+                      >
+                        <input 
+                          type="text" 
+                          placeholder={t.commentPlaceholder || 'Write a comment...'}
+                          value={newCommentText}
+                          onChange={(e) => setNewCommentText(e.target.value)}
+                          style={{ flex: 1, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '10px 16px', color: '#FFF', outline: 'none', fontSize: '12px' }}
+                        />
+                        <button 
+                          type="submit"
+                          style={{ background: '#BF00FF', border: 'none', color: '#FFF', fontWeight: 'bold', padding: '0 20px', borderRadius: '20px', fontSize: '12px', cursor: 'pointer', boxShadow: '0 0 10px rgba(191,0,255,0.3)' }}
+                        >
+                          {t.postComment || 'Comment ⚡'}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>
+                  <h3>Select a song to view lyrics, likes, and comments!</h3>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* PAGE: LOUDLY AI REMIX */}
           {activePage === 'loudly' && (
             <div>
@@ -1420,7 +1631,11 @@ export default function App() {
       >
         
         {/* Left side: Track Details */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isMobile ? '60%' : '25%', minWidth: 0 }}>
+        <div 
+          onClick={() => setActivePage('now-playing')}
+          style={{ display: 'flex', alignItems: 'center', gap: '12px', width: isMobile ? '60%' : '25%', minWidth: 0, cursor: 'pointer' }}
+          title="Click to view likes & comments!"
+        >
           {currentTrack ? (
             <>
               <img src={currentTrack.cover} alt={currentTrack.title} style={{ width: '48px', height: '48px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)', flexShrink: 0 }} />
